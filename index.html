@@ -3,17 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cadillac F1 Team</title>
+  <title>Cadillac F1 Team – Eredmények</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #111;
+      background-color: #121212;
       color: white;
-      margin: 0;
+      text-align: center;
       padding: 20px;
-    }
-    h1 {
-      color: gold;
     }
     table {
       width: 100%;
@@ -21,21 +18,18 @@
       margin-top: 20px;
     }
     th, td {
-      border: 1px solid #555;
+      border: 1px solid #444;
       padding: 8px;
       text-align: center;
     }
-    td[contenteditable="true"] {
+    th {
       background-color: #222;
-    }
-    .disabled {
-      background-color: #333;
-      color: #777;
     }
     .gold { background-color: gold; color: black; font-weight: bold; }
     .silver { background-color: silver; color: black; font-weight: bold; }
     .bronze { background-color: #cd7f32; color: black; font-weight: bold; }
     .dnf { background-color: red; color: white; font-weight: bold; }
+    .disabled { background-color: #333; color: #777; pointer-events: none; }
     button {
       background-color: black;
       color: white;
@@ -65,20 +59,22 @@
 </head>
 <body>
   <h1 id="title">Cadillac F1 Team – 1. Szezon</h1>
-  <div id="login-status"></div>
-  <div id="main-container" style="display:none">
+  <div>
     <button onclick="switchSeason(1)">1. Szezon</button>
     <button onclick="switchSeason(2)">2. Szezon</button>
+  </div>
+  <p id="login-status"></p>
+  <div id="main-container" style="display: none;">
     <table id="results-table">
       <thead>
         <tr>
           <th>#</th>
-          <th>Futam</th>
+          <th>Név</th>
           <th>Helyszín</th>
           <th>Sprint</th>
-          <th>Sprint Quali</th>
-          <th>Quali</th>
-          <th>Főfutam</th>
+          <th>Sprint Q</th>
+          <th>Q</th>
+          <th>Futam</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -109,39 +105,31 @@
 
     let isEditor = false;
 
-    auth.getRedirectResult()
-      .then((result) => {
-        if (result.user) {
-          handleUser(result.user);
-        }
-      })
-      .catch((error) => {
-        console.error("Bejelentkezési hiba:", error);
-      });
-
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        handleUser(user);
-      } else {
-        document.getElementById("login-status").innerHTML = `<button class="login-btn" onclick="login()">Bejelentkezés Google-fiókkal</button>`;
-        isEditor = false;
-        document.getElementById("main-container").style.display = "block";
-        buildTable();
+    auth.getRedirectResult().then(result => {
+      if (result.user) {
+        console.log("Visszatért Google belépés után:", result.user.email);
       }
+    }).catch(error => {
+      console.error("Redirect hiba:", error.message);
     });
 
-    function handleUser(user) {
+    auth.onAuthStateChanged(user => {
       const status = document.getElementById("login-status");
-      if (allowedEmails.includes(user.email)) {
-        status.innerText = `Bejelentkezve: ${user.email}`;
-        isEditor = true;
+      if (user) {
+        if (allowedEmails.includes(user.email)) {
+          status.innerText = `Bejelentkezve: ${user.email}`;
+          isEditor = true;
+        } else {
+          status.innerText = `Bejelentkezve: ${user.email} (nincs jogosultság szerkeszteni)`;
+          isEditor = false;
+        }
       } else {
-        status.innerText = `Bejelentkezve: ${user.email} (nincs jogosultság szerkeszteni)`;
+        status.innerHTML = `<button class="login-btn" onclick="login()">Bejelentkezés Google-fiókkal</button>`;
         isEditor = false;
       }
       document.getElementById("main-container").style.display = "block";
       buildTable();
-    }
+    });
 
     function login() {
       const provider = new firebase.auth.GoogleAuthProvider();
@@ -227,7 +215,6 @@
           cell.addEventListener("input", () => {
             const value = cell.innerText.trim();
             db.collection(collection).doc(cellId).set({ value });
-            applyStyle(cell);
           });
 
           const unsub = db.collection(collection).doc(cellId).onSnapshot(doc => {
@@ -246,3 +233,4 @@
   </script>
 </body>
 </html>
+
