@@ -16,6 +16,15 @@
       background-size: cover;
       color: #fff;
     }
+	  <div id="user-profile" style="
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+  z-index: 1000;
+">
+  <img id="profile-pic" src="https://cdn-icons-png.flaticon.com/512/747/747376.png" alt="Felhasználó" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid gold;">
+</div>
 
     .container {
       background: rgba(0, 0, 0, 0.7);
@@ -254,29 +263,55 @@
         console.error("Bejelentkezési hiba:", error);
       });
 
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        handleUser(user);
-      } else {
-        document.getElementById("login-status").innerHTML = `<button class="login-btn" onclick="login()">Bejelentkezés Google-fiókkal</button>`;
-        isEditor = false;
-        document.getElementById("main-container").style.display = "block";
-        buildTable();
-      }
-    });
+   auth.onAuthStateChanged(user => {
+  if (user) {
+    handleUser(user);
+  } else {
+    const status = document.getElementById("login-status");
+    status.innerHTML = `<button class="login-btn" onclick="login()">Bejelentkezés Google-fiókkal</button>`;
+    
+    
+    document.getElementById("profile-pic").src = "https://cdn-icons-png.flaticon.com/512/747/747376.png";
 
-    function handleUser(user) {
-      const status = document.getElementById("login-status");
-      if (allowedEmails.includes(user.email)) {
-        status.innerText = `Bejelentkezve: ${user.email}`;
-        isEditor = true;
-      } else {
-        status.innerText = `Bejelentkezve: ${user.email} (nincs jogosultság szerkeszteni)`;
-        isEditor = false;
-      }
-      document.getElementById("main-container").style.display = "block";
-      buildTable();
-    }
+    
+    document.getElementById("user-profile").onclick = () => {
+      login();
+    };
+
+    isEditor = false;
+    document.getElementById("main-container").style.display = "block";
+    buildTable();
+  }
+});
+
+
+function handleUser(user) {
+  const status = document.getElementById("login-status");
+  const profilePic = document.getElementById("profile-pic");
+
+  if (allowedEmails.includes(user.email)) {
+    status.innerText = `Bejelentkezve: ${user.email}`;
+    isEditor = true;
+  } else {
+    status.innerText = `Bejelentkezve: ${user.email} (nincs jogosultság szerkeszteni)`;
+    isEditor = false;
+  }
+
+  
+  if (user.photoURL) {
+    profilePic.src = user.photoURL;
+  }
+
+
+  document.getElementById("user-profile").onclick = () => {
+    auth.signOut().then(() => {
+      window.location.reload();
+    });
+  };
+
+  document.getElementById("main-container").style.display = "block";
+  buildTable();
+}
 
     function login() {
       const provider = new firebase.auth.GoogleAuthProvider();
