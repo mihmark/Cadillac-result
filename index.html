@@ -18,14 +18,17 @@
     }
 
     .container {
-      background: rgba(0, 0, 0, 0.7);
-      padding: 20px;
-      border-radius: 12px;
-      max-width: 1200px;
-      margin: 40px auto;
-      text-align: center;
-      backdrop-filter: blur(5px);
-    }
+  background: rgba(0, 0, 0, 0.7);
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 1200px;
+  margin: 40px auto;
+  text-align: center;
+  backdrop-filter: blur(5px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 	 button {
       background-color: black;
       color: white;
@@ -74,7 +77,13 @@
       text-align: center;
       user-select: text;
     }
-
+	user-profile {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  cursor: pointer;
+}
     th {
       background-color: #222;
       color: #fff;
@@ -120,28 +129,32 @@
 ">
   <img id="profile-pic" src="https://cdn-icons-png.flaticon.com/512/747/747376.png" alt="Felhasználó" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid gold;">
 
-  <div class="container" id="main-container" style="display: none;">
-    <h1 id="title">Cadillac F1 Team 1.szezon</h1>
-    <div id="login-status"></div>
-    <div class="nav">
-      <button onclick="switchSeason(1)">1. Szezon</button>
-      <button onclick="switchSeason(2)">2. Szezon</button>
-    </div>
-    <table id="results-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Nagydíj</th>
-          <th>Helyszín</th>
-          <th>Sprint</th>
-          <th>Sprint időmérő</th>
-          <th>Kvalifikáció</th>
-          <th>Verseny</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+  <div id="user-profile">
+  <img id="profile-pic" src="https://cdn-icons-png.flaticon.com/512/747/747376.png" alt="Felhasználó" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid gold;">
+</div>
+
+<div class="container" id="main-container" style="display: none;">
+  <h1 id="title">Cadillac F1 Team 1.szezon</h1>
+  <div id="login-status"></div>
+  <div class="nav">
+    <button onclick="switchSeason(1)">1. Szezon</button>
+    <button onclick="switchSeason(2)">2. Szezon</button>
   </div>
+  <table id="results-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Nagydíj</th>
+        <th>Helyszín</th>
+        <th>Sprint</th>
+        <th>Sprint időmérő</th>
+        <th>Kvalifikáció</th>
+        <th>Verseny</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
