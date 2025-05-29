@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Cadillac F1 Team – 2025 Eredmények</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     html, body {
       height: 100%;
@@ -61,6 +62,15 @@
 
     h1 {
       margin-bottom: 20px;
+      font-size: 2rem;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
     }
 
     table {
@@ -104,56 +114,82 @@
       margin-bottom: 15px;
     }
 
-    #user-profile {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      margin-bottom: 10px;
+    .calendar {
+      margin-top: 30px;
+      background: #fff;
+      color: #000;
+      padding: 10px;
+      border-radius: 8px;
     }
 
-    #profile-pic {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      margin-right: 10px;
+    .table-wrapper {
+      overflow-x: auto;
+      width: 100%;
     }
-	@media (max-width: 768px) {
+
+    @media (max-width: 768px) {
       .container {
         margin: 20px 10px;
         padding: 15px;
       }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      button {
+        font-size: 14px;
+        padding: 6px 12px;
+      }
+
+      table {
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.3rem;
+      }
+
+      .nav {
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
-
   <div class="container" id="main-container" style="display: none;">
-    <h1 id="title">Cadillac F1 Team 1.szezon</h1>
-
-    <div id="user-profile">
-      <img id="profile-pic" src="https://cdn-icons-png.flaticon.com/512/747/747376.png" alt="Profilkép">
-      <div id="login-status"></div>
-    </div>
-
+    <h1 id="title">Cadillac F1 Team 1. szezon</h1>
+    <div id="login-status"></div>
     <div class="nav">
       <button onclick="switchSeason(1)">1. Szezon</button>
       <button onclick="switchSeason(2)">2. Szezon</button>
     </div>
-
-    <table id="results-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Nagydíj</th>
-          <th>Helyszín</th>
-          <th>Sprint</th>
-          <th>Sprint időmérő</th>
-          <th>Kvalifikáció</th>
-          <th>Verseny</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <div class="table-wrapper">
+      <table id="results-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nagydíj</th>
+            <th>Helyszín</th>
+            <th>Sprint</th>
+            <th>Sprint időmérő</th>
+            <th>Kvalifikáció</th>
+            <th>Verseny</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </div>
+
+  
 
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
