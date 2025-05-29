@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadillac F1 Team – 2025 Eredmények</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: url("https://imgs.search.brave.com/QkFGfHtPGGiEc9XliQFZt3vDR9Bla_TaRPmgLWfDPZU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jYWRp/bGxhY3NvY2lldHku/Y29tL3dwLWNvbnRl/bnQvdXBsb2Fkcy8y/MDI0LzA1L0dNLUNh/ZGlsbGFjLUYxLUZv/cm11bGEtT25lLXJh/Y2UtY2FyLWNsb3Nl/LXVwLXBvd2VyLXVu/aXQtbWFudWZhY3R1/cmVyLTAwMS0xMDI0/eDY4My5qcGc") no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+    }
+
+    .container {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 1200px;
+      margin: 40px auto;
+      text-align: center;
+      backdrop-filter: blur(5px);
+    }
+	 button {
+      background-color: black;
+      color: white;
+      border: 2px solid gold;
+      padding: 8px 16px;
+      margin: 5px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: gold;
+      color: black;
+      transform: scale(1.05);
+    }
+
+    .login-btn {
+      background-color: gold;
+      color: black;
+      font-weight: bold;
+    }
+
+    .login-btn:hover {
+      background-color: #d4af37;
+      transform: scale(1.05);
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      color: black;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border: 1px solid #aaa;
+      padding: 8px;
+      text-align: center;
+      user-select: text;
+    }
+
+    th {
+      background-color: #222;
+      color: #fff;
+    }
+
+    td[contenteditable="true"] {
+      background-color: #f9f9f9;
+      cursor: text;
+    }
+
+    td.disabled {
+      background-color: black;
+      color: #999;
+      cursor: default;
+    }
+
+    .gold { background-color: gold !important; color: black !important; font-weight: bold; }
+    .silver { background-color: silver !important; color: black !important; font-weight: bold; }
+    .bronze { background-color: #cd7f32 !important; color: black !important; font-weight: bold; }
+    .dnf { background-color: #c00 !important; color: white !important; font-weight: bold; }
+
+    #login-status {
+      margin-bottom: 15px;
+    }
+
+    .calendar {
+      margin-top: 30px;
+      background: #fff;
+      color: #000;
+      padding: 10px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="main-container" style="display: none;">
+    <h1 id="title">Cadillac F1 Team – 1. Szezon</h1>
+    <div id="login-status"></div>
+    <div class="nav">
+      <button onclick="switchSeason(1)">1. Szezon</button>
+      <button onclick="switchSeason(2)">2. Szezon</button>
+    </div>
+    <table id="results-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nagydíj</th>
+          <th>Helyszín</th>
+          <th>Sprint</th>
+          <th>Sprint időmérő</th>
+          <th>Kvalifikáció</th>
+          <th>Verseny</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+  
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBtWYLAHfvJvkFKHb9JvErm-2G5Mei_l64",
+      authDomain: "eredmenyek-5ebb7.firebaseapp.com",
+      projectId: "eredmenyek-5ebb7",
+      storageBucket: "eredmenyek-5ebb7.appspot.com",
+      messagingSenderId: "954248784188",
+      appId: "1:954248784188:web:4d4e90b1dc70f0aeaa1639"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    const allowedEmails = [
+      "mmark1209@outlook.com",
+      "masik@email.hu"
+    ];
+
+    let isEditor = false;
+
+    auth.onAuthStateChanged(user => {
+      const status = document.getElementById("login-status");
+      if (user) {
+        if (allowedEmails.includes(user.email)) {
+          status.innerText = `Bejelentkezve: ${user.email}`;
+          isEditor = true;
+        } else {
+          status.innerText = `Bejelentkezve: ${user.email} (nincs jogosultság szerkeszteni)`;
+          isEditor = false;
+        }
+      } else {
+        status.innerHTML = `<button onclick="login()">Bejelentkezés Google-fiókkal</button>`;
+        isEditor = false;
+      }
+      document.getElementById("main-container").style.display = "block";
+      buildTable();
+    });
+
+    function login() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider);
+    }
+
+    const races = [
+      ["Ausztrál", "Melbourne", false],
+      ["Kínai", "Sanghaj", true],
+      ["Japán", "Szuzuka", false],
+      ["Bahreini", "Szahír", false],
+      ["Szaúd-arábiai", "Dzsidda", false],
+      ["Miami", "Miami", true],
+      ["Emilia-Romagna", "Imola", false],
+      ["Monacói", "Monaco", false],
+      ["Spanyol", "Barcelona", false],
+      ["Kanadai", "Montreal", false],
+      ["Osztrák", "Spielberg", false],
+      ["Brit", "Silverstone", false],
+      ["Belga", "Spa-Francorchamps", true],
+      ["Magyar", "Mogyoród", false],
+      ["Holland", "Zandvoort", false],
+      ["Olasz", "Monza", false],
+      ["Azerbajdzsáni", "Baku", false],
+      ["Szingapúri", "Szingapúr", false],
+      ["USA", "Austin", true],
+      ["Mexikói", "Mexikóváros", false],
+      ["São Paulo-i", "São Paulo", true],
+      ["Las Vegas-i", "Las Vegas", false],
+      ["Qatar-i", "Lasoil", false],
+      ["Abu Dzabi", "Abu Dzabi", false]
+    
+    ];
+
+    let currentSeason = 1;
+    let unsubscribeFns = [];
+
+    function switchSeason(season) {
+      currentSeason = season;
+      document.getElementById("title").innerText = `Cadillac F1 Team – ${season}. Szezon`;
+      unsubscribeFns.forEach(unsub => unsub());
+      unsubscribeFns = [];
+      buildTable();
+    }
+
+    function applyStyle(cell) {
+      const value = cell.innerText.trim().toUpperCase();
+      cell.classList.remove("gold", "silver", "bronze", "dnf");
+      if (value === "1") cell.classList.add("gold");
+      else if (value === "2") cell.classList.add("silver");
+      else if (value === "3") cell.classList.add("bronze");
+      else if (value === "DNF") cell.classList.add("dnf");
+    }
+
+    function buildTable() {
+      const tableBody = document.querySelector("#results-table tbody");
+      tableBody.innerHTML = "";
+      const collection = currentSeason === 1 ? "results" : "results_s2";
+
+      races.forEach((race, index) => {
+        const [name, location, hasSprint] = race;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${name}</td>
+          <td>${location}</td>
+          <td ${hasSprint ? 'contenteditable="true"' : 'class="disabled"'} id="cell-${index}-sprint"></td>
+          <td ${hasSprint ? 'contenteditable="true"' : 'class="disabled"'} id="cell-${index}-sprintqual"></td>
+          <td contenteditable="true" id="cell-${index}-qual"></td>
+          <td contenteditable="true" id="cell-${index}-race"></td>
+        `;
+        tableBody.appendChild(tr);
+
+        ["sprint", "sprintqual", "qual", "race"].forEach(type => {
+          const cellId = `cell-${index}-${type}`;
+          const cell = document.getElementById(cellId);
+          if (!cell || cell.classList.contains("disabled")) return;
+
+          if (!isEditor) {
+            cell.contentEditable = "false";
+            return;
+          }
+
+          cell.addEventListener("input", () => {
+            const value = cell.innerText.trim();
+            db.collection(collection).doc(cellId).set({ value });
+          });
+
+          const unsub = db.collection(collection).doc(cellId).onSnapshot(doc => {
+            if (doc.exists) {
+              const value = doc.data().value || "";
+              if (cell.innerText.trim() !== value) {
+                cell.innerText = value;
+                applyStyle(cell);
+              }
+            }
+          });
+          unsubscribeFns.push(unsub);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
