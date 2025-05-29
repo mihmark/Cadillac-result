@@ -1,35 +1,44 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cadillac F1 Team – Eredmények</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #121212;
-      color: white;
-      text-align: center;
-      padding: 20px;
-    }
+      background: url("https://imgs.search.brave.com/QkFGfHtPGGiEc9XliQFZt3vDR9Bla_TaRPmgLWfDPZU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jYWRp/bGxhY3NvY2lldHku/Y29tL3dwLWNvbnRl/bnQvdXBsb2Fkcy8y/MDI0LzA1L0dNLUNh/ZGlsbGFjLUYxLUZv/cm11bGEtT25lLXJh/Y2UtY2FyLWNsb3Nl/LXVwLXBvd2VyLXVu/aXQtbWFudWZhY3R1/cmVyLTAwMS0xMDI0/eDY4My5qcGc") no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 0;
+      color: #fff;
+
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
     }
+
     th, td {
-      border: 1px solid #444;
+      border: 1px solid gold;
       padding: 8px;
-      text-align: center;
     }
+
     th {
       background-color: #222;
     }
-    .gold { background-color: gold; color: black; font-weight: bold; }
-    .silver { background-color: silver; color: black; font-weight: bold; }
-    .bronze { background-color: #cd7f32; color: black; font-weight: bold; }
-    .dnf { background-color: red; color: white; font-weight: bold; }
-    .disabled { background-color: #333; color: #777; pointer-events: none; }
+
+    .gold { background-color: gold; color: black; }
+    .silver { background-color: silver; color: black; }
+    .bronze { background-color: #cd7f32; color: black; }
+    .dnf { background-color: red; color: white; }
+
+    .disabled {
+      background-color: #333;
+      color: gray;
+      pointer-events: none;
+    }
+
     button {
       background-color: black;
       color: white;
@@ -41,30 +50,35 @@
       font-size: 16px;
       transition: background-color 0.3s, transform 0.2s;
     }
+
     button:hover {
       background-color: gold;
       color: black;
       transform: scale(1.05);
     }
+
     .login-btn {
       background-color: gold;
       color: black;
       font-weight: bold;
     }
+
     .login-btn:hover {
       background-color: #d4af37;
-      transform: scale(1.05);
+    }
+
+    #main-container {
+      display: none;
     }
   </style>
 </head>
 <body>
   <h1 id="title">Cadillac F1 Team – 1. Szezon</h1>
-  <div>
+  <div id="login-status"></div>
+  <div id="main-container">
     <button onclick="switchSeason(1)">1. Szezon</button>
     <button onclick="switchSeason(2)">2. Szezon</button>
-  </div>
-  <p id="login-status"></p>
-  <div id="main-container" style="display: none;">
+
     <table id="results-table">
       <thead>
         <tr>
@@ -81,9 +95,11 @@
     </table>
   </div>
 
+  <!-- Firebase SDK-k -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBtWYLAHfvJvkFKHb9JvErm-2G5Mei_l64",
@@ -105,14 +121,6 @@
 
     let isEditor = false;
 
-    auth.getRedirectResult().then(result => {
-      if (result.user) {
-        console.log("Visszatért Google belépés után:", result.user.email);
-      }
-    }).catch(error => {
-      console.error("Redirect hiba:", error.message);
-    });
-
     auth.onAuthStateChanged(user => {
       const status = document.getElementById("login-status");
       if (user) {
@@ -127,6 +135,7 @@
         status.innerHTML = `<button class="login-btn" onclick="login()">Bejelentkezés Google-fiókkal</button>`;
         isEditor = false;
       }
+
       document.getElementById("main-container").style.display = "block";
       buildTable();
     });
